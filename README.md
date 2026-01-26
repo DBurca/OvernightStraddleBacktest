@@ -24,7 +24,7 @@ Outputs go to `outputs/`:
 Historical option prices are not pulled from an options data feed. Instead, the backtest prices the call and put using Black–Scholes (European, no dividends) with volatility coming from either:
 
 - Rolling realized volatility from the underlying’s daily closes, or
-- A fixmplied volatility from the config
+- A fixed implied volatility from the config
 
 This means the option P&L is model-based and will differ from live fills and real option markets.
 
@@ -79,7 +79,7 @@ MPLBACKEND=Agg PYTHONPATH=src python3 -m overnight_straddle.main --config config
 - `strangle.call_otm_pct`: call strike set to \(S \cdot (1 + call\_otm\_pct)\)
 - `strangle.put_otm_pct`: put strike set to \(S \cdot (1 - put\_otm\_pct)\)
 - `contract_multiplier`: typically 100 for US equity options
--cts_per_trade`: number of straddles/strangles per trade per day
+- `contracts_per_trade`: number of straddles/strangles per trade per day
 
 #### `strategy.vol`
 - `method`: `rolling_realized` or `fixed`
@@ -105,6 +105,19 @@ MPLBACKEND=Agg PYTHONPATH=src python3 -m overnight_straddle.main --config config
 
 ### `plot`
 - `output_dir`: output directory (relative to config file)
-- `save_png`: whether to write `pnl.p`show`: whether to display the matplotlib window (can be overridden by `--no-show`)
+- `save_png`: whether to write `pnl.png`
+- `show`: whether to display the matplotlib window (can be overridden by `--no-show`)
 
-Disclaimer: This project was created with the assist of Cursor AI
+### `stress_test`
+This is a sensitivity analysis for the option strategies (straddle/strangle). It does not use real option data. It re-prices each trade using Black–Scholes under a grid of assumptions, then writes additional CSVs and a chart.
+
+- `enabled`: runs the stress test if true
+- `iv_shift_entry_points`: list of absolute volatility shifts applied at entry (e.g. `0.05` means +5 vol points)
+- `iv_shift_exit_points`: list of absolute volatility shifts applied at exit
+- `option_half_spread_pct`: half-spread applied to option premiums:
+  - buys use `mid * (1 + half_spread)`
+  - sells use `mid * (1 - half_spread)`
+- `extra_slippage_bps`: extra bps slippage applied on top of `strategy.costs.slippage_bps`
+- `plot`: if true, writes `outputs/stress.png` showing total return vs exit IV shift
+
+Disclaimer: This project was created with the assistance of Cursor AI

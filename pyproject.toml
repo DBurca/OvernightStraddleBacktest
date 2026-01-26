@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "overnight-straddle-backtest"
+version = "0.1.0"
+description = "Overnight long straddle backtest (buy at close, sell at next open)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+
+dependencies = [
+  "yfinance>=0.2.28",
+  "pandas>=2.0.0",
+  "numpy>=1.24.0",
+  "matplotlib>=3.7.0",
+  "PyYAML>=6.0.0",
+]
+
+[project.scripts]
+overnight-straddle = "overnight_straddle.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/overnight_straddle"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+select = ["E", "W", "F", "I", "B", "UP"]
+ignore = ["E501"]
+

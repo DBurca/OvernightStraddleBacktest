@@ -1,4 +1,4 @@
-# Overnight options backtest (close → next open)
+# Overnight options backtest (close to next open)
 
 This folder contains a backtest that compares three overnight positions:
 
@@ -108,4 +108,4 @@ MPLBACKEND=Agg PYTHONPATH=src python3 -m overnight_straddle.main --config config
 - `save_png`: whether to write `pnl.png`
 - `show`: whether to display the matplotlib window (can be overridden by `--no-show`)
 
-
+Disclaimer: This project was created with the assist of Cursor AI

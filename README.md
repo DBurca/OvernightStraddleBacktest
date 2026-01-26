@@ -108,4 +108,16 @@ MPLBACKEND=Agg PYTHONPATH=src python3 -m overnight_straddle.main --config config
 - `save_png`: whether to write `pnl.png`
 - `show`: whether to display the matplotlib window (can be overridden by `--no-show`)
 
+### `stress_test`
+This is a sensitivity analysis for the option strategies (straddle/strangle). It does not use real option data. It re-prices each trade using Black–Scholes under a grid of assumptions, then writes additional CSVs and a chart.
+
+- `enabled`: runs the stress test if true
+- `iv_shift_entry_points`: list of absolute volatility shifts applied at entry (e.g. `0.05` means +5 vol points)
+- `iv_shift_exit_points`: list of absolute volatility shifts applied at exit
+- `option_half_spread_pct`: half-spread applied to option premiums:
+  - buys use `mid * (1 + half_spread)`
+  - sells use `mid * (1 - half_spread)`
+- `extra_slippage_bps`: extra bps slippage applied on top of `strategy.costs.slippage_bps`
+- `plot`: if true, writes `outputs/stress.png` showing total return vs exit IV shift
+
 

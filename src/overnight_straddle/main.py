@@ -14,6 +14,7 @@ from .config import load_config
 from .data import load_price_history
 from .performance import add_equity_columns, build_performance_summary, save_performance_summary
 from .plotting import save_outputs, trades_to_frame
+from .stress_test import run_stress_test
 
 
 def _parse_args() -> argparse.Namespace:
@@ -208,6 +209,43 @@ def main() -> None:
         print(display.to_string(index=False))
     if png_path:
         print(f"Wrote plot to: {png_path}")
+
+    # Stress test (options only): IV shocks + option bid/ask half-spread.
+    if bool(cfg.get("stress_test.enabled", False)):
+        iv_entry = cfg.get("stress_test.iv_shift_entry_points", [0.0])
+        iv_exit = cfg.get("stress_test.iv_shift_exit_points", [0.0])
+        if not isinstance(iv_entry, list) or not isinstance(iv_exit, list):
+            raise SystemExit("stress_test.iv_shift_* must be lists")
+
+        option_half_spread_pct = float(cfg.get("stress_test.option_half_spread_pct", 0.0))
+        extra_slippage_bps = float(cfg.get("stress_test.extra_slippage_bps", 0.0))
+        stress_plot = bool(cfg.get("stress_test.plot", True))
+
+        stress_perf, _, stress_plot_path = run_stress_test(
+            trades_df=df,
+            output_dir=out_dir,
+            initial_balance=initial_balance,
+            horizons_trading_days=horizons,
+            risk_free_rate=risk_free_rate,
+            dte_days=dte_days,
+            include_weekends_in_time_decay=include_weekends_in_time_decay,
+            contract_multiplier=contract_multiplier,
+            contracts_per_trade=contracts_per_trade,
+            base_slippage_bps=slippage_bps,
+            iv_shift_entry_points=[float(x) for x in iv_entry],
+            iv_shift_exit_points=[float(x) for x in iv_exit],
+            option_half_spread_pct=option_half_spread_pct,
+            extra_slippage_bps=extra_slippage_bps,
+            plot=stress_plot,
+        )
+
+        if not stress_perf.empty:
+            print()
+            print("Stress test outputs:")
+            print(f"- outputs/stress_performance.csv")
+            print(f"- outputs/stress_trades.csv")
+            if stress_plot_path:
+                print(f"- outputs/stress.png")
 
 
 if __name__ == "__main__":

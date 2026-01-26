@@ -57,6 +57,19 @@ performance:
     6m: 126
     1y: 252
 
+stress_test:
+  enabled: true
+  # Absolute volatility shifts (e.g. 0.05 = +5 vol points).
+  iv_shift_entry_points: [0.0]
+  iv_shift_exit_points: [-0.10, -0.05, 0.0, 0.05, 0.10]
+  # Half-spread applied to option premiums:
+  # - buy uses mid*(1 + half_spread)
+  # - sell uses mid*(1 - half_spread)
+  option_half_spread_pct: 0.01
+  # Additional slippage applied on cashflows, in bps (added to existing slippage_bps).
+  extra_slippage_bps: 0.0
+  plot: true
+
 plot:
   output_dir: outputs
   save_png: true

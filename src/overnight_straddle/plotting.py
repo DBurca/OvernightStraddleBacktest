@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from pathlib import Path
 
+import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -38,6 +39,15 @@ def save_outputs(
     png_path: Path | None = None
     if save_png:
         png_path = out_dir / "pnl.png"
+
+        # Try to ensure an interactive backend when show=True.
+        if show:
+            for backend in ["MacOSX", "TkAgg", "QtAgg"]:
+                try:
+                    plt.switch_backend(backend)
+                    break
+                except Exception:
+                    continue
 
         fig, (ax1, ax2, ax3) = plt.subplots(
             3,
@@ -122,11 +132,14 @@ def save_outputs(
             ax3.legend(loc="best")
 
         fig.tight_layout()
+
+        # Requirement: show the plot before saving files.
+        if show:
+            plt.show()
+
         fig.savefig(png_path, dpi=160)
 
-    if show:
-        plt.show()
-    else:
+    if not show:
         plt.close("all")
 
     return csv_path, png_path

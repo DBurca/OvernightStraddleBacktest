@@ -141,6 +141,7 @@ def run_stress_test(
             vol_entry = _clamp_vol(base_vol + sc.iv_shift_entry)
             vol_exit = _clamp_vol(base_vol + sc.iv_shift_exit)
 
+            position = str(r["position"]).lower()
             # Mid premiums under stressed vols.
             q_entry_call = black_scholes_quote(
                 spot=s_entry,
@@ -170,11 +171,9 @@ def run_stress_test(
                 risk_free_rate=risk_free_rate,
                 vol=vol_exit,
             )
-
             entry_mid = float(q_entry_call.call + q_entry_put.put)
             exit_mid = float(q_exit_call.call + q_exit_put.put)
 
-            position = str(r["position"]).lower()
             if position == "long":
                 entry_px = _apply_half_spread(
                     entry_mid, side="buy", half_spread_pct=sc.option_half_spread_pct

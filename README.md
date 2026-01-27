@@ -1,6 +1,6 @@
 # Overnight options backtest (close to next open)
 
-This folder contains a backtest that compares three overnight positions:
+This folder contains a backtest that compares these overnight positions:
 
 - Straddle: call + put at the same (ATM) strike
 - Strangle: OTM call + OTM put at different strikes
@@ -42,6 +42,24 @@ Run without opening a plot window (still writes PNG and CSVs):
 
 ```bash
 MPLBACKEND=Agg PYTHONPATH=src python3 -m overnight_straddle.main --config config.yaml --no-show
+```
+
+## Realtime (paper) runner
+
+`src/overnight_straddle/realtime_short_straddle.py` is a long-running script that:
+
+- Starts with a cash balance of 50000 (configurable)
+- Near the close, records a paper fill for a short straddle
+- At the next open, records a paper close
+- After closing, posts the last trade P&L and current equity to a Discord webhook
+
+It uses yfinance option chain quotes for paper fills (bid/ask/last). It does not place live orders.
+
+Run it:
+
+```bash
+export DISCORD_WEBHOOK_URL="(your webhook url)"
+PYTHONPATH=src python3 -m overnight_straddle.realtime_short_straddle --config realtime_config.yaml
 ```
 
 ## `config.yaml` reference

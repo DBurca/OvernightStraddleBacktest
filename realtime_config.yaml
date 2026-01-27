@@ -1,0 +1,33 @@
+ticker: SPY
+
+capital:
+  initial_balance: 50000
+
+schedule:
+  timezone: America/New_York
+  # Entry/exit times are local exchange time.
+  entry_time: "15:55"   # attempt entry at/after this time
+  exit_time: "09:31"    # attempt exit at/after this time
+  poll_seconds: 30
+  allow_weekend_holds: true
+
+strategy:
+  # This script is for a SHORT straddle only.
+  # It uses yfinance option chain quotes (bid/ask/last) for fills.
+  dte_days: 7              # choose the nearest expiry >= today + dte_days
+  strike_rounding: 1.0     # used as a target; actual strike is chosen from chain
+  contracts: 1
+  contract_multiplier: 100
+
+  costs:
+    slippage_bps: 0.0
+    # If bid/ask is missing, we fall back to lastPrice and apply this half-spread.
+    option_half_spread_pct: 0.01
+
+discord:
+  # Set DISCORD_WEBHOOK_URL in your environment; do not put it in this file.
+  enabled: true
+
+outputs:
+  output_dir: outputs
+

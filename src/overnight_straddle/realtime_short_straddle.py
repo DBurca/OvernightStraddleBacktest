@@ -8,8 +8,17 @@ import time as time_module
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
-from typing import Any, Literal
-from zoneinfo import ZoneInfo
+from typing import Any
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal  # type: ignore[assignment]
+
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo  # type: ignore[assignment]
 
 import numpy as np
 import pandas as pd

@@ -28,6 +28,11 @@ Historical option prices are not pulled from an options data feed. Instead, the 
 
 This means the option P&L is model-based and will differ from live fills and real option markets.
 
+## Requirements
+
+- Python 3.7 or higher
+- For Python 3.7: `typing_extensions` and `backports.zoneinfo` are automatically installed if using pip
+
 ## Running
 
 From `OvernightStraddleBacktest/`:

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 from .backtest import Trade
@@ -67,7 +68,7 @@ def save_outputs(
                 return f"{ticker} {base}"
             return base
 
-        # Plot cumulative P&L for each (ticker, strategy).
+        # Plot cumulative P&L for each (ticker, position, strategy).
         for (ticker, position, strategy), g in df.groupby(["ticker", "position", "strategy"]):
             ax1.plot(
                 g["exit_date"],
@@ -75,6 +76,24 @@ def save_outputs(
                 label=_label(ticker, position, strategy),
                 linewidth=2,
             )
+
+        # Add log-return curve for the short straddle strategy on a secondary axis.
+        mask_short_straddle = (df["position"] == "short") & (df["strategy"] == "straddle")
+        if "equity" in df.columns and "initial_balance" in df.columns and mask_short_straddle.any():
+            g = df.loc[mask_short_straddle].sort_values("exit_date")
+            base = float(g["initial_balance"].iloc[0])
+            if base > 0:
+                log_ret = np.log(g["equity"] / base)
+                ax1b = ax1.twinx()
+                ax1b.plot(
+                    g["exit_date"],
+                    log_ret,
+                    linestyle="--",
+                    linewidth=1.8,
+                    color="black",
+                    alpha=0.8,
+                )
+                ax1b.set_ylabel("Short straddle log-return")
         ax1.axhline(0, color="black", linewidth=1, alpha=0.5)
         if multi_strategy:
             ax1.set_title("Overnight Strategies — Cumulative P&L")

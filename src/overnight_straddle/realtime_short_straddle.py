@@ -18,7 +18,14 @@ except ImportError:
 try:
     from zoneinfo import ZoneInfo
 except ImportError:
-    from backports.zoneinfo import ZoneInfo  # type: ignore[assignment]
+    try:
+        from backports.zoneinfo import ZoneInfo  # type: ignore[assignment]
+    except ImportError:
+        # Fallback to pytz for older Python versions.
+        import pytz
+
+        def ZoneInfo(tz_name: str) -> Any:  # type: ignore[misc]
+            return pytz.timezone(tz_name)
 
 import numpy as np
 import pandas as pd

@@ -7,7 +7,7 @@ data:
   csv_folder: data          # used when source=csv (expects <TICKER>.csv with Date,Open,High,Low,Close)
 
 backtest:
-  lookback_trading_days: 2000
+  lookback_trading_days: 1000
   end_date: null            # e.g. "2025-12-31" or null for latest
 
 run:
@@ -15,7 +15,7 @@ run:
     - straddle
     - strangle
   position: short          # long | short
-  include_equity_baseline: true
+  include_equity_baseline: false
   include_buy_and_hold: true
 
 calendar:
@@ -27,7 +27,7 @@ strategy:
   strike_rounding: 1.0      # 1.0 -> round to nearest $1 ATM strike
   strangle:
     call_otm_pct: 0.02      # +2% OTM call strike vs spot at entry
-    put_otm_pct: 0.02       # -2% OTM put strike vs spot at entry
+    put_otm_pct: 0.02      # -2% OTM put strike vs spot at entry
   contract_multiplier: 100
   contracts_per_trade: 6
 
@@ -66,9 +66,9 @@ stress_test:
   # Half-spread applied to option premiums:
   # - buy uses mid*(1 + half_spread)
   # - sell uses mid*(1 - half_spread)
-  option_half_spread_pct: 0.01
+  option_half_spread_pct: 0.02
   # Additional slippage applied on cashflows, in bps (added to existing slippage_bps).
-  extra_slippage_bps: 0.0
+  extra_slippage_bps: 0.1
   plot: true
 
 plot:

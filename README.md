@@ -31,7 +31,9 @@ This means the option P&L is model-based and will differ from live fills and rea
 ## Requirements
 
 - Python 3.7 or higher
-- For Python 3.7: `typing_extensions` and `backports.zoneinfo` are automatically installed if using pip
+- Dependencies: `yfinance`, `pandas`, `numpy`, `matplotlib`, `PyYAML`
+- For Python 3.7: `typing_extensions` and `pytz` are automatically installed if using pip
+- Install all dependencies: `pip3 install -e .` or `pip3 install yfinance pandas numpy matplotlib PyYAML typing_extensions pytz`
 
 ## Running
 

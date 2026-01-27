@@ -409,3 +409,85 @@ def backtest_overnight_equity(
 
     return trades
 
+
+def backtest_buy_and_hold(
+    *,
+    ticker: str,
+    ohlc: pd.DataFrame,
+    initial_capital: float,
+    slippage_bps: float,
+) -> list[Trade]:
+    """
+    Buy-and-hold baseline: buy at first close, hold until last day.
+    Creates a trade per day showing unrealized P&L.
+    """
+    df = ohlc.copy()
+    df["Date"] = pd.to_datetime(df.index).date
+    dates: list[date] = list(df["Date"].values)
+    closes = df["Close"].astype(float)
+
+    if len(df) < 2:
+        return []
+
+    slip = float(slippage_bps) / 10_000.0
+    first_close = float(closes.iloc[0])
+    if first_close <= 0:
+        return []
+
+    # Buy shares at first close.
+    shares = initial_capital / (first_close * (1.0 + slip))
+    if shares <= 0:
+        return []
+
+    trades: list[Trade] = []
+    entry_day = dates[0]
+    initial_cost = initial_capital
+    # Entry value: what we get for spending initial_cost.
+    entry_value = first_close * shares * (1.0 - slip)
+    prev_value = entry_value
+
+    for i in range(len(df)):
+        current_day = dates[i]
+        current_close = float(closes.iloc[i])
+        if not math.isfinite(current_close) or current_close <= 0:
+            continue
+
+        # Current value of the position.
+        current_value = current_close * shares * (1.0 - slip)
+
+        if i == 0:
+            # First day: entry. Net P&L = 0 (spend $100k, get $100k worth of stock).
+            pnl = 0.0
+            entry_cashflow = -initial_cost
+            exit_cashflow = entry_value
+        else:
+            # Subsequent days: daily change in value.
+            pnl = current_value - prev_value
+            entry_cashflow = 0.0
+            exit_cashflow = current_value
+
+        prev_value = current_value
+
+        trades.append(
+            Trade(
+                ticker=ticker,
+                strategy="buy_and_hold",
+                position="long",
+                entry_date=entry_day if i == 0 else current_day,
+                exit_date=current_day,
+                entry_spot=first_close if i == 0 else float(closes.iloc[i - 1]),
+                exit_spot=current_close,
+                call_strike=float("nan"),
+                put_strike=float("nan"),
+                entry_premium=0.0,
+                exit_premium=0.0,
+                vol=float("nan"),
+                pnl=pnl,
+                entry_cashflow=entry_cashflow,
+                exit_cashflow=exit_cashflow,
+                capital_required=initial_cost if i == 0 else 0.0,
+            )
+        )
+
+    return trades
+

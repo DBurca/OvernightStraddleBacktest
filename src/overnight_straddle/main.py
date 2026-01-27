@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from .backtest import (
+    backtest_buy_and_hold,
     backtest_overnight_equity,
     backtest_overnight_straddle,
     backtest_overnight_strangle,
@@ -62,6 +63,7 @@ def main() -> None:
         raise SystemExit("config run.position must be 'long' or 'short'")
 
     include_equity = bool(cfg.get("run.include_equity_baseline", True))
+    include_buy_and_hold = bool(cfg.get("run.include_buy_and_hold", True))
 
     dte_days = int(cfg.get("strategy.dte_days", 7))
     strike_rounding = float(cfg.get("strategy.strike_rounding", 1.0))
@@ -164,6 +166,16 @@ def main() -> None:
                     ohlc=ph.df,
                     allow_weekend_holds=allow_weekend_holds,
                     shares_per_trade=shares_per_trade,
+                    slippage_bps=slippage_bps,
+                )
+            )
+
+        if include_buy_and_hold:
+            all_trades.extend(
+                backtest_buy_and_hold(
+                    ticker=ph.ticker,
+                    ohlc=ph.df,
+                    initial_capital=initial_balance,
                     slippage_bps=slippage_bps,
                 )
             )

@@ -7,7 +7,7 @@ data:
   csv_folder: data          # used when source=csv (expects <TICKER>.csv with Date,Open,High,Low,Close)
 
 backtest:
-  lookback_trading_days: 500
+  lookback_trading_days: 2000
   end_date: null            # e.g. "2025-12-31" or null for latest
 
 run:
@@ -16,6 +16,7 @@ run:
     - strangle
   position: short          # long | short
   include_equity_baseline: true
+  include_buy_and_hold: true
 
 calendar:
   allow_weekend_holds: true

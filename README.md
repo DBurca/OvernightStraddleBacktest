@@ -51,6 +51,17 @@ Run without opening a plot window (still writes PNG and CSVs):
 MPLBACKEND=Agg PYTHONPATH=src python3 -m overnight_straddle.main --config config.yaml --no-show
 ```
 
+## QuantConnect backtest
+
+A **QuantConnect** version of the overnight straddle/strangle runs on real option chains (bid/ask, IV) and QC’s execution/margin model. Use it to compare with the local Black–Scholes backtest.
+
+- **Algorithm**: `quantconnect/main.py`
+- **How to run**: see `quantconnect/README.md` for:
+  - **Algorithm Lab** (cloud): copy `quantconnect/main.py` into a new algorithm and run backtest
+  - **Lean CLI** (local): `pip install lean`, `lean init`, then run `lean backtest` with the algorithm
+
+Config mapping from `config.yaml` to the algorithm is described in `quantconnect/README.md`.
+
 ## Realtime (paper) runner
 
 `src/overnight_straddle/realtime_short_straddle.py` is a long-running script that:
